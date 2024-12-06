@@ -7,7 +7,7 @@ from functools import partial
 from pprint import pprint
 from queue import Empty, Queue
 
-import IPython
+
 from bpylist2 import archiver
 from construct import Adapter, Const, Default, GreedyBytes, GreedyRange, Int16ul, Int32sl, Int32ul, Int64ul, Prefixed, \
     Select, Struct, Switch, this
@@ -371,6 +371,7 @@ class RemoteServer(LockdownService):
         self.broadcast = Channel.create(0, self)
 
     def shell(self):
+        import IPython
         IPython.embed(
             header=highlight(SHELL_USAGE, lexers.PythonLexer(), formatters.Terminal256Formatter(style='native')),
             user_ns={
