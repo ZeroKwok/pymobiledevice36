@@ -9,8 +9,6 @@ import xml
 from enum import Enum
 from typing import Any, Optional
 
-import IPython
-from pygments import formatters, highlight, lexers
 
 from pymobiledevice3.exceptions import ConnectionTerminatedError, DeviceNotFoundError, NoDeviceConnectedError, \
     PyMobileDevice3Exception
@@ -367,6 +365,8 @@ class ServiceConnection:
 
     def shell(self) -> None:
         """ Start an interactive shell. """
+        import IPython
+        from pygments import formatters, highlight, lexers
         IPython.embed(
             header=highlight(SHELL_USAGE, lexers.PythonLexer(), formatters.Terminal256Formatter(style='native')),
             user_ns={

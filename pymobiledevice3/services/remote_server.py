@@ -11,7 +11,7 @@ from queue import Empty, Queue
 from bpylist2 import archiver
 from construct import Adapter, Const, Default, GreedyBytes, GreedyRange, Int16ul, Int32sl, Int32ul, Int64ul, Prefixed, \
     Select, Struct, Switch, this
-from pygments import formatters, highlight, lexers
+
 
 from pymobiledevice3.exceptions import DvtException, UnrecognizedSelectorError
 from pymobiledevice3.lockdown_service_provider import LockdownServiceProvider
@@ -372,6 +372,7 @@ class RemoteServer(LockdownService):
 
     def shell(self):
         import IPython
+        from pygments import formatters, highlight, lexers
         IPython.embed(
             header=highlight(SHELL_USAGE, lexers.PythonLexer(), formatters.Terminal256Formatter(style='native')),
             user_ns={

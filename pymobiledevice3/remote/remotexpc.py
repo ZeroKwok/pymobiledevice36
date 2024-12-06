@@ -9,7 +9,7 @@ import nest_asyncio
 from construct import StreamError
 from hyperframe.frame import DataFrame, Frame, GoAwayFrame, HeadersFrame, RstStreamFrame, SettingsFrame, \
     WindowUpdateFrame
-from pygments import formatters, highlight, lexers
+
 from traitlets.config import Config
 
 from pymobiledevice3.exceptions import StreamClosedError
@@ -122,9 +122,11 @@ class RemoteXPCConnection:
         sys.argv = ['a']
         config = Config()
         config.InteractiveShellApp.exec_lines = ['%autoawait asyncio']
+
+        import IPython
+        from pygments import formatters, highlight, lexers
         print(highlight(SHELL_USAGE, lexers.PythonLexer(),
                         formatters.Terminal256Formatter(style='native')))
-        import IPython
         IPython.start_ipython(config=config, user_ns={
             'client': self,
             'XpcInt64Type': XpcInt64Type,

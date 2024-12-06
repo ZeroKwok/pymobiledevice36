@@ -19,7 +19,7 @@ import hexdump
 from click.exceptions import Exit
 from construct import Const, Container, CString, Enum, GreedyRange, Int64ul, Struct, Tell
 from parameter_decorators import path_to_str
-from pygments import formatters, highlight, lexers
+
 from pygnuutils.cli.ls import ls as ls_cli
 from pygnuutils.ls import Ls, LsStub
 from tqdm.auto import trange
@@ -914,6 +914,7 @@ class AfcShell:
         return posixpath.join(self.cwd, filename)
 
     def _update_prompt(self) -> None:
+        from pygments import formatters, highlight, lexers
         self.prompt = highlight(f'[{self.afc.service_name}:{self.cwd}]$ ', lexers.BashSessionLexer(),
                                 formatters.Terminal256Formatter(style='solarized-dark')).strip()
 
