@@ -44,48 +44,53 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 ## 实现路线
 
 1. 在3.9 版本中跑通
-   1. [ ] 剔除 cli 模块
-   2. [ ] 编写 test_location.py
-   3. [ ] 运行 test_location.py 并初步测试通过
-   4. [ ] 检查 test_location.py 执行流程中所有加载的模块(必要的)
-   5. [ ] 剔除 前一步中不需要的模块
-   6. [ ] 运行 test_location.py 并初步测试通过
+   1. [x] 剔除 cli 模块
+   1. [x] 剔除 services 流程不需要的依赖
+   1. [x] 剔除 restore 仅该模块需要的依赖
+   1. [ ] 编写 location.py
+   1. [ ] 运行 location.py 并初步测试通过
+   1. [ ] 检查 location.py 执行流程中所有加载的依赖(必要的)
+   1. [ ] 剔除 前一步中不需要的依赖
+   1. [ ] 运行 location.py 并初步测试通过
 2. 在3.8 版本中跑通
    1. [ ] 安装 依赖项
       1. [ ] 依赖项缺失, 版本不兼容: 讨论, 寻找替代品
-   2. [ ] 运行 test_location.py, 并输出错误
+   2. [ ] 运行 location.py, 并输出错误
    3. [ ] 检查 输出错误
       1. [ ] 错误在源码中: 结合 GPT 修改
       2. [ ] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
-   4. [ ] 运行 test_location.py 并初步测试通过
+   4. [ ] 运行 location.py 并初步测试通过
 3. 在3.6 版本中跑通
    1. [ ] 安装 依赖项, 依赖项缺失: 讨论, 寻找替代品
-   2. [ ] 运行 test_location.py, 并输出错误
+   2. [ ] 运行 location.py, 并输出错误
    3. [ ] 检查 输出错误
       1. [ ] 错误在源码中: 结合 GPT 修改
       2. [ ] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
-   4. [ ] 运行 test_location.py 并初步测试通过
+   4. [ ] 运行 location.py 并初步测试通过
 
 ## 依赖记录
 
 必备/公共依赖:
 
+- struct
 - construct
 - packaging
 - cryptography
+- plistlib
 
 可剔除依赖:
 
-- cli/tqdm
 - cli/IPython
 - cli/pygments
+- restore/ipsw_parser
 
 可选的不影响迁移的依赖:
 
 - inquirer3
+- [cli|restore]/tqdm
+- [restore|installation_proxy.py]/zipfile
 
 ### py36
 
 - qh3 使用 aioquic==0.9.15 代替
 - opack 没有, 需要寻找替代品
-- 
