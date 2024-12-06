@@ -34,6 +34,11 @@ source .venv/Scripts/activate
 ./py39/python.exe -m pymobiledevice3 amfi enable-developer-mode  or 手动开启开发者模式
 sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 ./py39/python.exe -m pymobiledevice3 developer dvt simulate-location set -- 30.587252101162736 107.08929777145387
+
+# 运行测试用例
+./py39/python.exe -m pip install --index-url http://192.168.3.225:8080/simple/ --trusted-host 192.168.3.225 pytest pytest_asyncio
+./py39/python.exe -m pytest -W ignore::UserWarning
+./py39/python.exe -m pytest tests/services/test_afc.py -W ignore::UserWarning
 ```
 
 ## 实现路线
