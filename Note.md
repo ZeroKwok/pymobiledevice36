@@ -60,3 +60,27 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
       1. [ ] 错误在源码中: 结合 GPT 修改
       2. [ ] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
    4. [ ] 运行 test_location.py 并初步测试通过
+
+## 依赖记录
+
+必备/公共依赖:
+
+- construct
+- packaging
+- cryptography
+
+可剔除依赖:
+
+- cli/tqdm
+- cli/IPython
+- cli/pygments
+
+可选的不影响迁移的依赖:
+
+- inquirer3
+
+### py36
+
+- qh3 使用 aioquic==0.9.15 代替
+- opack 没有, 需要寻找替代品
+- 
