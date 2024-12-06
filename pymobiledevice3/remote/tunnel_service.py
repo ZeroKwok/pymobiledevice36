@@ -36,13 +36,13 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from opack import dumps
 from packaging.version import Version
 from pytun_pmd3 import TunTapDevice
-from qh3.asyncio import QuicConnectionProtocol
-from qh3.asyncio.client import connect as aioquic_connect
-from qh3.asyncio.protocol import QuicStreamHandler
-from qh3.quic import packet_builder
-from qh3.quic.configuration import QuicConfiguration
-from qh3.quic.connection import QuicConnection
-from qh3.quic.events import ConnectionTerminated, DatagramFrameReceived, QuicEvent, StreamDataReceived
+from aioquic.asyncio import QuicConnectionProtocol
+from aioquic.asyncio.client import connect as aioquic_connect
+from aioquic.asyncio.protocol import QuicStreamHandler
+from aioquic.quic import packet_builder
+from aioquic.quic.configuration import QuicConfiguration
+from aioquic.quic.connection import QuicConnection
+from aioquic.quic.events import ConnectionTerminated, DatagramFrameReceived, QuicEvent, StreamDataReceived
 from srptools import SRPClientSession, SRPContext
 from srptools.constants import PRIME_3072, PRIME_3072_GEN
 

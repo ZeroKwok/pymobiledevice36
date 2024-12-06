@@ -32,12 +32,13 @@ zeroconf>=0.132.2
 ifaddr
 hyperframe
 srptools
-qh3>=1.0.0,<2
+# qh3==1.2.0
+aioquic
 developer_disk_image>=0.0.2
 opack
 psutil
 pytun-pmd3>=2.0.9
 aiofiles
 prompt_toolkit
-sslpsk-pmd3>=1.0.3;python_version<'3.13'
+#sslpsk-pmd3>=1.0.3;python_version<'3.13'
 python-pcapng>=2.1.1
