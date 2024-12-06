@@ -11,7 +11,8 @@ from typing import Union
 import click
 import coloredlogs
 
-from pymobiledevice3.cli.cli_common import TUNNEL_ENV_VAR, isatty
+# 剔除 cli 模块
+# from pymobiledevice3.cli.cli_common import TUNNEL_ENV_VAR, isatty
 from pymobiledevice3.exceptions import AccessDeniedError, CloudConfigurationAlreadyPresentError, \
     ConnectionFailedToUsbmuxdError, DeprecationError, DeveloperModeError, DeveloperModeIsNotEnabledError, \
     DeviceHasPasscodeSetError, DeviceNotFoundError, FeatureNotSupportedError, InternalError, InvalidServiceError, \
@@ -171,7 +172,8 @@ def cli():
     """
     pass
 
-
+# 剔除 cli 模块
+'''
 def main() -> None:
     try:
         cli()
@@ -250,3 +252,7 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+'''
+
+if __name__ == '__main__':
+    logger.error('The pymobiledevice3 variant has removed the cli module, please use the API.')
