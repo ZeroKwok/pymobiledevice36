@@ -10,3 +10,6 @@ debug/
 pymobiledevice3/_version.py
 .python-version
 __main__.spec
+__pycache__
+.vscode
+py3*
