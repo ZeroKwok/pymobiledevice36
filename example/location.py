@@ -1,20 +1,14 @@
 import sys
-sys.path.append(".\..")
-sys.path.append(".\..\pymobiledevice3")
 from pymobiledevice3.services.dvt.instruments.location_simulation import LocationSimulation
+from pymobiledevice3.services.dvt.dvt_secure_socket_proxy import DvtSecureSocketProxyService
+from pymobiledevice3.remote.remote_service_discovery import RemoteServiceDiscoveryService
+from pymobiledevice3.lockdown_service_provider import LockdownServiceProvider
 
 
-def test_set_location(dvt):
-    """
-    Test set location.
-    """
-    # set to liberty island
-    LocationSimulation(dvt).set(40.690008, -74.045843)
-
-
-def test_clear_location(dvt):
-    """
-    Test clear location simulation
-    """
-    # set to liberty island
-    LocationSimulation(dvt).clear()
+if __name__ == '__main__':
+    service_provider = RemoteServiceDiscoveryService(rsd)
+    with DvtSecureSocketProxyService(service_provider) as dvt:
+        LocationSimulation(dvt).set(40.690008, -74.045843)
+        
+        # TODO
+        LocationSimulation(dvt).clear()
