@@ -6,7 +6,6 @@ from typing import Callable
 
 import requests
 from construct import Int8ul, Int16ul, Int32ul, Int64ul, Select
-from tqdm import tqdm
 
 
 def plist_access_path(d, path: tuple, type_=None, required=False):
@@ -66,6 +65,7 @@ def get_asyncio_loop() -> asyncio.AbstractEventLoop:
 
 
 def file_download(url: str, outfile: Path, chunk_size=1024) -> None:
+    from tqdm import tqdm
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get('content-length', 0))
     with outfile.open('wb') as file, tqdm(
