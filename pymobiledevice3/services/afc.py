@@ -22,11 +22,13 @@ from parameter_decorators import path_to_str
 
 from pygnuutils.cli.ls import ls as ls_cli
 from pygnuutils.ls import Ls, LsStub
-from tqdm.auto import trange
-from xonsh.built_ins import XSH
-from xonsh.cli_utils import Annotated, Arg, ArgParserAlias
-from xonsh.main import main as xonsh_main
-from xonsh.tools import print_color
+
+if sys.version_info > (3, 9):
+    from tqdm.auto import trange
+    from xonsh.built_ins import XSH
+    from xonsh.cli_utils import Annotated, Arg, ArgParserAlias
+    from xonsh.main import main as xonsh_main
+    from xonsh.tools import print_color
 
 from pymobiledevice3.exceptions import AfcException, AfcFileNotFoundError, ArgumentError
 from pymobiledevice3.lockdown import LockdownClient
@@ -633,339 +635,339 @@ class AfcService(LockdownService):
 
         return data
 
+if sys.version_info > (3, 9):
+    class AfcLsStub(LsStub):
+        def __init__(self, afc_shell, stdout):
+            self.afc_shell = afc_shell
+            self.stdout = stdout
 
-class AfcLsStub(LsStub):
-    def __init__(self, afc_shell, stdout):
-        self.afc_shell = afc_shell
-        self.stdout = stdout
+        @property
+        def sep(self):
+            return posixpath.sep
 
-    @property
-    def sep(self):
-        return posixpath.sep
+        def join(self, path, *paths):
+            return posixpath.join(path, *paths)
 
-    def join(self, path, *paths):
-        return posixpath.join(path, *paths)
+        def abspath(self, path):
+            return posixpath.normpath(path)
 
-    def abspath(self, path):
-        return posixpath.normpath(path)
+        def stat(self, path, dir_fd=None, follow_symlinks=True):
+            if follow_symlinks:
+                path = self.afc_shell.afc.resolve_path(path)
+            return self.afc_shell.afc.os_stat(path)
 
-    def stat(self, path, dir_fd=None, follow_symlinks=True):
-        if follow_symlinks:
-            path = self.afc_shell.afc.resolve_path(path)
-        return self.afc_shell.afc.os_stat(path)
+        def readlink(self, path, dir_fd=None):
+            return self.afc_shell.afc.resolve_path(path)
 
-    def readlink(self, path, dir_fd=None):
-        return self.afc_shell.afc.resolve_path(path)
+        def isabs(self, path):
+            return posixpath.isabs(path)
 
-    def isabs(self, path):
-        return posixpath.isabs(path)
+        def dirname(self, path):
+            return posixpath.dirname(path)
 
-    def dirname(self, path):
-        return posixpath.dirname(path)
+        def basename(self, path):
+            return posixpath.basename(path)
 
-    def basename(self, path):
-        return posixpath.basename(path)
+        def getgroup(self, st_gid):
+            return '-'
 
-    def getgroup(self, st_gid):
-        return '-'
+        def getuser(self, st_uid):
+            return '-'
 
-    def getuser(self, st_uid):
-        return '-'
+        def now(self):
+            return self.afc_shell.lockdown.date
 
-    def now(self):
-        return self.afc_shell.lockdown.date
+        def listdir(self, path='.'):
+            return self.afc_shell.afc.listdir(path)
 
-    def listdir(self, path='.'):
-        return self.afc_shell.afc.listdir(path)
+        def system(self):
+            return 'Darwin'
 
-    def system(self):
-        return 'Darwin'
+        def getenv(self, key, default=None):
+            return ''
 
-    def getenv(self, key, default=None):
-        return ''
+        def print(self, *objects, sep=' ', end='\n', file=sys.stdout, flush=False):
+            print(objects[0], end=end)
 
-    def print(self, *objects, sep=' ', end='\n', file=sys.stdout, flush=False):
-        print(objects[0], end=end)
-
-    def get_tty_width(self):
-        return os.get_terminal_size().columns
+        def get_tty_width(self):
+            return os.get_terminal_size().columns
 
 
-def path_completer(xsh, action, completer, alias, command):
-    shell: AfcShell = XSH.ctx['_shell']
-    pwd = shell.cwd
-    is_absolute = command.prefix.startswith('/')
-    dirpath = posixpath.join(pwd, command.prefix)
-    if not shell.afc.exists(dirpath):
-        dirpath = posixpath.dirname(dirpath)
-    result = []
-    for f in shell.afc.listdir(dirpath):
-        if is_absolute:
-            completion_option = posixpath.join(dirpath, f)
-        else:
-            completion_option = posixpath.relpath(posixpath.join(dirpath, f), pwd)
-        try:
-            if shell.afc.isdir(posixpath.join(dirpath, f)):
-                result.append(f'{completion_option}/')
+    def path_completer(xsh, action, completer, alias, command):
+        shell: AfcShell = XSH.ctx['_shell']
+        pwd = shell.cwd
+        is_absolute = command.prefix.startswith('/')
+        dirpath = posixpath.join(pwd, command.prefix)
+        if not shell.afc.exists(dirpath):
+            dirpath = posixpath.dirname(dirpath)
+        result = []
+        for f in shell.afc.listdir(dirpath):
+            if is_absolute:
+                completion_option = posixpath.join(dirpath, f)
             else:
+                completion_option = posixpath.relpath(posixpath.join(dirpath, f), pwd)
+            try:
+                if shell.afc.isdir(posixpath.join(dirpath, f)):
+                    result.append(f'{completion_option}/')
+                else:
+                    result.append(completion_option)
+            except AfcException:
                 result.append(completion_option)
-        except AfcException:
-            result.append(completion_option)
-    return result
+        return result
 
 
-def dir_completer(xsh, action, completer, alias, command):
-    shell: AfcShell = XSH.ctx['_shell']
-    pwd = shell.cwd
-    is_absolute = command.prefix.startswith('/')
-    dirpath = posixpath.join(pwd, command.prefix)
-    if not shell.afc.exists(dirpath):
-        dirpath = posixpath.dirname(dirpath)
-    result = []
-    for f in shell.afc.listdir(dirpath):
-        if is_absolute:
-            completion_option = posixpath.join(dirpath, f)
-        else:
-            completion_option = posixpath.relpath(posixpath.join(dirpath, f), pwd)
-        try:
-            if shell.afc.isdir(posixpath.join(dirpath, f)):
-                result.append(f'{completion_option}/')
-        except AfcException:
-            result.append(completion_option)
-    return result
+    def dir_completer(xsh, action, completer, alias, command):
+        shell: AfcShell = XSH.ctx['_shell']
+        pwd = shell.cwd
+        is_absolute = command.prefix.startswith('/')
+        dirpath = posixpath.join(pwd, command.prefix)
+        if not shell.afc.exists(dirpath):
+            dirpath = posixpath.dirname(dirpath)
+        result = []
+        for f in shell.afc.listdir(dirpath):
+            if is_absolute:
+                completion_option = posixpath.join(dirpath, f)
+            else:
+                completion_option = posixpath.relpath(posixpath.join(dirpath, f), pwd)
+            try:
+                if shell.afc.isdir(posixpath.join(dirpath, f)):
+                    result.append(f'{completion_option}/')
+            except AfcException:
+                result.append(completion_option)
+        return result
 
 
-class AfcShell:
-    @classmethod
-    def create(cls, service_provider: LockdownServiceProvider, service_name: Optional[str] = None,
-               service: Optional[LockdownService] = None, auto_cd: Optional[str] = '/'):
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-        args = ['--rc', str(pathlib.Path(__file__).absolute())]
-        os.environ['XONSH_COLOR_STYLE'] = 'default'
-        XSH.ctx['_class'] = cls
-        XSH.ctx['_lockdown'] = service_provider
-        XSH.ctx['_auto_cd'] = auto_cd
-        if service is not None:
-            XSH.ctx['_service'] = service
-        else:
-            XSH.ctx['_service'] = AfcService(service_provider, service_name=service_name)
+    class AfcShell:
+        @classmethod
+        def create(cls, service_provider: LockdownServiceProvider, service_name: Optional[str] = None,
+                service: Optional[LockdownService] = None, auto_cd: Optional[str] = '/'):
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            args = ['--rc', str(pathlib.Path(__file__).absolute())]
+            os.environ['XONSH_COLOR_STYLE'] = 'default'
+            XSH.ctx['_class'] = cls
+            XSH.ctx['_lockdown'] = service_provider
+            XSH.ctx['_auto_cd'] = auto_cd
+            if service is not None:
+                XSH.ctx['_service'] = service
+            else:
+                XSH.ctx['_service'] = AfcService(service_provider, service_name=service_name)
 
-        try:
-            logging.getLogger('parso.python.diff').disabled = True
-            logging.getLogger('parso.cache').disabled = True
-            xonsh_main(args)
-        except SystemExit:
-            pass
+            try:
+                logging.getLogger('parso.python.diff').disabled = True
+                logging.getLogger('parso.cache').disabled = True
+                xonsh_main(args)
+            except SystemExit:
+                pass
 
-    def __init__(self, lockdown: LockdownServiceProvider, service: AfcService):
-        self.lockdown = lockdown
-        self.afc = service
-        XSH.ctx['_shell'] = self
-        self.cwd = XSH.ctx.get('_auto_cd', '/')
-        self._commands = {}
-        self._orig_aliases = {}
-        self._orig_prompt = XSH.env['PROMPT']
-        self._setup_shell_commands()
+        def __init__(self, lockdown: LockdownServiceProvider, service: AfcService):
+            self.lockdown = lockdown
+            self.afc = service
+            XSH.ctx['_shell'] = self
+            self.cwd = XSH.ctx.get('_auto_cd', '/')
+            self._commands = {}
+            self._orig_aliases = {}
+            self._orig_prompt = XSH.env['PROMPT']
+            self._setup_shell_commands()
 
-        print_color('''
-        {BOLD_WHITE}Welcome to xonsh-afc shell! 👋{RESET}
-        Use {CYAN}show-help{RESET} to view a list of all available special commands.
-            These special commands will replace all already existing commands.
-        ''')
+            print_color('''
+            {BOLD_WHITE}Welcome to xonsh-afc shell! 👋{RESET}
+            Use {CYAN}show-help{RESET} to view a list of all available special commands.
+                These special commands will replace all already existing commands.
+            ''')
 
-    def _register_arg_parse_alias(self, name: str, handler: Union[Callable, str]):
-        handler = ArgParserAlias(func=handler, has_args=True, prog=name)
-        self._commands[name] = handler
-        if XSH.aliases.get(name):
-            self._orig_aliases[name] = XSH.aliases[name]
-        XSH.aliases[name] = handler
+        def _register_arg_parse_alias(self, name: str, handler: Union[Callable, str]):
+            handler = ArgParserAlias(func=handler, has_args=True, prog=name)
+            self._commands[name] = handler
+            if XSH.aliases.get(name):
+                self._orig_aliases[name] = XSH.aliases[name]
+            XSH.aliases[name] = handler
 
-    def _register_rpc_command(self, name, handler):
-        self._commands[name] = handler
-        if XSH.aliases.get(name):
-            self._orig_aliases[name] = XSH.aliases[name]
-        XSH.aliases[name] = handler
+        def _register_rpc_command(self, name, handler):
+            self._commands[name] = handler
+            if XSH.aliases.get(name):
+                self._orig_aliases[name] = XSH.aliases[name]
+            XSH.aliases[name] = handler
 
-    def _setup_shell_commands(self):
-        # clear all host commands except for some useful ones
-        XSH.env['PATH'].clear()
-        # adding "file" just to fix xonsh errors
-        for cmd in ['wc', 'grep', 'egrep', 'sed', 'awk', 'print', 'yes', 'cat', 'file']:
-            executable = shutil.which(cmd)
-            if executable is not None:
-                self._register_rpc_command(cmd, executable)
+        def _setup_shell_commands(self):
+            # clear all host commands except for some useful ones
+            XSH.env['PATH'].clear()
+            # adding "file" just to fix xonsh errors
+            for cmd in ['wc', 'grep', 'egrep', 'sed', 'awk', 'print', 'yes', 'cat', 'file']:
+                executable = shutil.which(cmd)
+                if executable is not None:
+                    self._register_rpc_command(cmd, executable)
 
-        self._register_rpc_command('ls', self.do_ls)
-        self._register_arg_parse_alias('pwd', self._do_pwd)
-        self._register_arg_parse_alias('link', self._do_link)
-        self._register_arg_parse_alias('cd', self._do_cd)
-        self._register_arg_parse_alias('cat', self._do_cat)
-        self._register_arg_parse_alias('rm', self._do_rm)
-        self._register_arg_parse_alias('pull', self._do_pull)
-        self._register_arg_parse_alias('push', self._do_push)
-        self._register_arg_parse_alias('walk', self._do_walk)
-        self._register_arg_parse_alias('head', self._do_head)
-        self._register_arg_parse_alias('hexdump', self._do_hexdump)
-        self._register_arg_parse_alias('mkdir', self._do_mkdir)
-        self._register_arg_parse_alias('info', self._do_info)
-        self._register_arg_parse_alias('mv', self._do_mv)
-        self._register_arg_parse_alias('stat', self._do_stat)
-        self._register_arg_parse_alias('show-help', self._do_show_help)
+            self._register_rpc_command('ls', self.do_ls)
+            self._register_arg_parse_alias('pwd', self._do_pwd)
+            self._register_arg_parse_alias('link', self._do_link)
+            self._register_arg_parse_alias('cd', self._do_cd)
+            self._register_arg_parse_alias('cat', self._do_cat)
+            self._register_arg_parse_alias('rm', self._do_rm)
+            self._register_arg_parse_alias('pull', self._do_pull)
+            self._register_arg_parse_alias('push', self._do_push)
+            self._register_arg_parse_alias('walk', self._do_walk)
+            self._register_arg_parse_alias('head', self._do_head)
+            self._register_arg_parse_alias('hexdump', self._do_hexdump)
+            self._register_arg_parse_alias('mkdir', self._do_mkdir)
+            self._register_arg_parse_alias('info', self._do_info)
+            self._register_arg_parse_alias('mv', self._do_mv)
+            self._register_arg_parse_alias('stat', self._do_stat)
+            self._register_arg_parse_alias('show-help', self._do_show_help)
 
-        XSH.env['PROMPT'] = f'[{{BOLD_CYAN}}{self.afc.service_name}:{{afc_cwd}}{{RESET}}]{{prompt_end}} '
-        XSH.env['PROMPT_FIELDS']['afc_cwd'] = self._afc_cwd
-        XSH.env['PROMPT_FIELDS']['prompt_end'] = self._prompt
+            XSH.env['PROMPT'] = f'[{{BOLD_CYAN}}{self.afc.service_name}:{{afc_cwd}}{{RESET}}]{{prompt_end}} '
+            XSH.env['PROMPT_FIELDS']['afc_cwd'] = self._afc_cwd
+            XSH.env['PROMPT_FIELDS']['prompt_end'] = self._prompt
 
-    def _prompt(self) -> str:
-        if len(XSH.history) == 0 or XSH.history[-1].rtn == 0:
-            return '{BOLD_GREEN}${RESET}'
-        return '{BOLD_RED}${RESET}'
+        def _prompt(self) -> str:
+            if len(XSH.history) == 0 or XSH.history[-1].rtn == 0:
+                return '{BOLD_GREEN}${RESET}'
+            return '{BOLD_RED}${RESET}'
 
-    def _afc_cwd(self) -> str:
-        return self.cwd
+        def _afc_cwd(self) -> str:
+            return self.cwd
 
-    def _relative_path(self, filename: str) -> str:
-        return posixpath.join(self.cwd, filename)
+        def _relative_path(self, filename: str) -> str:
+            return posixpath.join(self.cwd, filename)
 
-    def _do_show_help(self):
-        """
-        list all rpc commands
-        """
-        buf = ''
-        for k, v in self._commands.items():
-            buf += f'👾 {k}\n'
-        print(buf)
+        def _do_show_help(self):
+            """
+            list all rpc commands
+            """
+            buf = ''
+            for k, v in self._commands.items():
+                buf += f'👾 {k}\n'
+            print(buf)
 
-    def _do_pwd(self) -> None:
-        print(self.cwd)
+        def _do_pwd(self) -> None:
+            print(self.cwd)
 
-    def _do_link(self, target: str, source: str) -> None:
-        self.afc.link(self.relative_path(target), self.relative_path(source), afc_link_type_t.SYMLINK)
+        def _do_link(self, target: str, source: str) -> None:
+            self.afc.link(self.relative_path(target), self.relative_path(source), afc_link_type_t.SYMLINK)
 
-    def _do_cd(self, directory: Annotated[str, Arg(completer=dir_completer)]) -> None:
-        directory = self.relative_path(directory)
-        directory = posixpath.normpath(directory)
-        if self.afc.exists(directory):
-            self.cwd = directory
-            self._update_prompt()
-        else:
-            print(f'[ERROR] {directory} does not exist')
+        def _do_cd(self, directory: Annotated[str, Arg(completer=dir_completer)]) -> None:
+            directory = self.relative_path(directory)
+            directory = posixpath.normpath(directory)
+            if self.afc.exists(directory):
+                self.cwd = directory
+                self._update_prompt()
+            else:
+                print(f'[ERROR] {directory} does not exist')
 
-    def do_ls(self, args, stdin, stdout, stderr):
-        """ list files """
-        try:
-            with ls_cli.make_context('ls', args) as ctx:
-                files = list(map(self._relative_path, ctx.params.pop('files')))
-                files = files if files else [self.cwd]
-                Ls(AfcLsStub(self, stdout))(*files, **ctx.params)
-        except Exit:
-            pass
+        def do_ls(self, args, stdin, stdout, stderr):
+            """ list files """
+            try:
+                with ls_cli.make_context('ls', args) as ctx:
+                    files = list(map(self._relative_path, ctx.params.pop('files')))
+                    files = files if files else [self.cwd]
+                    Ls(AfcLsStub(self, stdout))(*files, **ctx.params)
+            except Exit:
+                pass
 
-    def _do_walk(self, directory: Annotated[str, Arg(completer=dir_completer)]):
-        for root, dirs, files in self.afc.walk(self.relative_path(directory)):
-            for name in files:
-                print(posixpath.join(root, name))
-            for name in dirs:
-                print(posixpath.join(root, name))
+        def _do_walk(self, directory: Annotated[str, Arg(completer=dir_completer)]):
+            for root, dirs, files in self.afc.walk(self.relative_path(directory)):
+                for name in files:
+                    print(posixpath.join(root, name))
+                for name in dirs:
+                    print(posixpath.join(root, name))
 
-    def _do_cat(self, filename: str):
-        print(try_decode(self.afc.get_file_contents(self.relative_path(filename))))
+        def _do_cat(self, filename: str):
+            print(try_decode(self.afc.get_file_contents(self.relative_path(filename))))
 
-    def _do_rm(self, file: Annotated[list, Arg(nargs='+', completer=path_completer)]):
-        for filename in file:
-            self.afc.rm(self.relative_path(filename))
+        def _do_rm(self, file: Annotated[list, Arg(nargs='+', completer=path_completer)]):
+            for filename in file:
+                self.afc.rm(self.relative_path(filename))
 
-    def _do_pull(self, remote_path: Annotated[str, Arg(completer=path_completer)], local_path: str,
-                 ignore_errors: bool = False, progress_bar: bool = True):
-        def log(src, dst):
-            print(f'{src} --> {dst}')
+        def _do_pull(self, remote_path: Annotated[str, Arg(completer=path_completer)], local_path: str,
+                    ignore_errors: bool = False, progress_bar: bool = True):
+            def log(src, dst):
+                print(f'{src} --> {dst}')
 
-        self.afc.pull(remote_path, local_path, callback=log, src_dir=self.cwd, ignore_errors=ignore_errors,
-                      progress_bar=progress_bar)
+            self.afc.pull(remote_path, local_path, callback=log, src_dir=self.cwd, ignore_errors=ignore_errors,
+                        progress_bar=progress_bar)
 
-    def _do_push(self, local_path: str, remote_path: Annotated[str, Arg(completer=path_completer)]):
-        def log(src, dst):
-            print(f'{src} --> {dst}')
+        def _do_push(self, local_path: str, remote_path: Annotated[str, Arg(completer=path_completer)]):
+            def log(src, dst):
+                print(f'{src} --> {dst}')
 
-        self.afc.push(local_path, self.relative_path(remote_path), callback=log)
+            self.afc.push(local_path, self.relative_path(remote_path), callback=log)
 
-    def _do_head(self, filename: Annotated[str, Arg(completer=path_completer)]):
-        print(try_decode(self.afc.get_file_contents(self.relative_path(filename))[:32]))
+        def _do_head(self, filename: Annotated[str, Arg(completer=path_completer)]):
+            print(try_decode(self.afc.get_file_contents(self.relative_path(filename))[:32]))
 
-    def _do_hexdump(self, filename: Annotated[str, Arg(completer=path_completer)]):
-        print(hexdump.hexdump(self.afc.get_file_contents(self.relative_path(filename)), result='return'))
+        def _do_hexdump(self, filename: Annotated[str, Arg(completer=path_completer)]):
+            print(hexdump.hexdump(self.afc.get_file_contents(self.relative_path(filename)), result='return'))
 
-    def _do_mkdir(self, filename: Annotated[str, Arg(completer=path_completer)]):
-        self.afc.makedirs(self.relative_path(filename))
+        def _do_mkdir(self, filename: Annotated[str, Arg(completer=path_completer)]):
+            self.afc.makedirs(self.relative_path(filename))
 
-    def _do_info(self):
-        for k, v in self.afc.get_device_info().items():
-            print(f'{k}: {v}')
+        def _do_info(self):
+            for k, v in self.afc.get_device_info().items():
+                print(f'{k}: {v}')
 
-    def _do_mv(self, source: Annotated[str, Arg(completer=path_completer)],
-               dest: Annotated[str, Arg(completer=path_completer)]):
-        return self.afc.rename(self.relative_path(source), self.relative_path(dest))
+        def _do_mv(self, source: Annotated[str, Arg(completer=path_completer)],
+                dest: Annotated[str, Arg(completer=path_completer)]):
+            return self.afc.rename(self.relative_path(source), self.relative_path(dest))
 
-    def _do_stat(self, filename: Annotated[str, Arg(completer=path_completer)]):
-        for k, v in self.afc.stat(self.relative_path(filename)).items():
-            print(f'{k}: {v}')
+        def _do_stat(self, filename: Annotated[str, Arg(completer=path_completer)]):
+            for k, v in self.afc.stat(self.relative_path(filename)).items():
+                print(f'{k}: {v}')
 
-    def relative_path(self, filename: str) -> str:
-        return posixpath.join(self.cwd, filename)
+        def relative_path(self, filename: str) -> str:
+            return posixpath.join(self.cwd, filename)
 
-    def _update_prompt(self) -> None:
-        from pygments import formatters, highlight, lexers
-        self.prompt = highlight(f'[{self.afc.service_name}:{self.cwd}]$ ', lexers.BashSessionLexer(),
-                                formatters.Terminal256Formatter(style='solarized-dark')).strip()
+        def _update_prompt(self) -> None:
+            from pygments import formatters, highlight, lexers
+            self.prompt = highlight(f'[{self.afc.service_name}:{self.cwd}]$ ', lexers.BashSessionLexer(),
+                                    formatters.Terminal256Formatter(style='solarized-dark')).strip()
 
-    def _complete(self, text, line, begidx, endidx):
-        curdir_diff = posixpath.dirname(text)
-        dirname = posixpath.join(self.cwd, curdir_diff)
-        prefix = posixpath.basename(text)
-        return [
-            str(posixpath.join(curdir_diff, filename)) for filename in self.afc.listdir(dirname)
-            if filename.startswith(prefix)
-        ]
+        def _complete(self, text, line, begidx, endidx):
+            curdir_diff = posixpath.dirname(text)
+            dirname = posixpath.join(self.cwd, curdir_diff)
+            prefix = posixpath.basename(text)
+            return [
+                str(posixpath.join(curdir_diff, filename)) for filename in self.afc.listdir(dirname)
+                if filename.startswith(prefix)
+            ]
 
-    def _complete_first_arg(self, text, line, begidx, endidx):
-        if self._count_completion_parts(line, begidx) > 1:
-            return []
-        return self._complete(text, line, begidx, endidx)
-
-    def _complete_push_arg(self, text, line, begidx, endidx):
-        count = self._count_completion_parts(line, begidx)
-        if count == 1:
-            return self._complete_local(text)
-        elif count == 2:
+        def _complete_first_arg(self, text, line, begidx, endidx):
+            if self._count_completion_parts(line, begidx) > 1:
+                return []
             return self._complete(text, line, begidx, endidx)
-        else:
-            return []
 
-    def _complete_pull_arg(self, text, line, begidx, endidx):
-        count = self._count_completion_parts(line, begidx)
-        if count == 1:
-            return self._complete(text, line, begidx, endidx)
-        elif count == 2:
-            return self._complete_local(text)
-        else:
-            return []
+        def _complete_push_arg(self, text, line, begidx, endidx):
+            count = self._count_completion_parts(line, begidx)
+            if count == 1:
+                return self._complete_local(text)
+            elif count == 2:
+                return self._complete(text, line, begidx, endidx)
+            else:
+                return []
 
-    @staticmethod
-    def _complete_local(text: str):
-        path = pathlib.Path(text)
-        path_iter = path.iterdir() if text.endswith(os.path.sep) else path.parent.iterdir()
-        return [str(p) for p in path_iter if str(p).startswith(text)]
+        def _complete_pull_arg(self, text, line, begidx, endidx):
+            count = self._count_completion_parts(line, begidx)
+            if count == 1:
+                return self._complete(text, line, begidx, endidx)
+            elif count == 2:
+                return self._complete_local(text)
+            else:
+                return []
 
-    @staticmethod
-    def _count_completion_parts(line, begidx):
-        # Strip the " for paths including spaces.
-        return len(shlex.split(line[:begidx].rstrip('"')))
+        @staticmethod
+        def _complete_local(text: str):
+            path = pathlib.Path(text)
+            path_iter = path.iterdir() if text.endswith(os.path.sep) else path.parent.iterdir()
+            return [str(p) for p in path_iter if str(p).startswith(text)]
+
+        @staticmethod
+        def _count_completion_parts(line, begidx):
+            # Strip the " for paths including spaces.
+            return len(shlex.split(line[:begidx].rstrip('"')))
 
 
-if __name__ == str(pathlib.Path(__file__).absolute()):
-    rc = XSH.ctx['_class'](XSH.ctx['_lockdown'], XSH.ctx['_service'])
-    # fix fzf conflicts
-    XSH.env['fzf_history_binding'] = ""  # Ctrl+R
-    XSH.env['fzf_ssh_binding'] = ""  # Ctrl+S
-    XSH.env['fzf_file_binding'] = ""  # Ctrl+T
-    XSH.env['fzf_dir_binding'] = ""  # Ctrl+G
+    if __name__ == str(pathlib.Path(__file__).absolute()):
+        rc = XSH.ctx['_class'](XSH.ctx['_lockdown'], XSH.ctx['_service'])
+        # fix fzf conflicts
+        XSH.env['fzf_history_binding'] = ""  # Ctrl+R
+        XSH.env['fzf_ssh_binding'] = ""  # Ctrl+S
+        XSH.env['fzf_file_binding'] = ""  # Ctrl+T
+        XSH.env['fzf_dir_binding'] = ""  # Ctrl+G

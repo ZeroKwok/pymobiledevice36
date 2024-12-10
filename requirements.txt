@@ -13,7 +13,7 @@ pykdebugparser>=1.2.4
 # pyusb>=1.2.1
 # tqdm
 requests
-xonsh  # try remove
+# xonsh  # removed and check errors
 parameter_decorators
 packaging
 pygnuutils>=0.0.7 # try remove
