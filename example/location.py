@@ -1,4 +1,7 @@
+import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import asyncio
 import tempfile
 from functools import partial
@@ -13,7 +16,7 @@ from pymobiledevice3.lockdown_service_provider import LockdownServiceProvider
 from pymobiledevice3.remote.tunnel_service import RemotePairingQuicTunnel, start_tunnel
 from pymobiledevice3.remote.common import ConnectionType, TunnelProtocol
 from pymobiledevice3.tunneld import TUNNELD_DEFAULT_ADDRESS, TunneldRunner, async_get_tunneld_devices
-from pymobiledevice3.exceptions import InvalidServiceError
+from pymobiledevice3.exceptions import InvalidServiceError, TunneldConnectionError
 from pymobiledevice3.osu.os_utils import get_os_utils
 from pymobiledevice3.usbmux import select_devices_by_connection_type
 from pymobiledevice3.lockdown import create_using_usbmux, create_using_tcp
@@ -70,7 +73,7 @@ def mounter_ddi(idevice):
 
 def done():
     print('Done!')
-    exit(0)
+    sys.exit(0)
 
 if __name__ == '__main__':
     host = TUNNELD_DEFAULT_ADDRESS[0]
@@ -108,8 +111,11 @@ if __name__ == '__main__':
                 except InvalidServiceError:
                     print('LocationSimulation service not available or need DeveloperDiskImage to be installed')
             else:
-                with make_dvt_service(idevice, host, port) as dvt:
-                    location = LocationSimulation(dvt)
-                    location.set(40.690008, -74.045843)
-                    get_os_utils().wait_return()
-                    location.clear()
+                try:
+                    with make_dvt_service(idevice, host, port) as dvt:
+                        location = LocationSimulation(dvt)
+                        location.set(40.690008, -74.045843)
+                        get_os_utils().wait_return()
+                        location.clear()
+                except TunneldConnectionError:
+                    print('Tunneld service not available')
