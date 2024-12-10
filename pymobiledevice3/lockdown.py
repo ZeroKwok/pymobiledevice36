@@ -802,7 +802,7 @@ def create_using_remote(service: ServiceConnection, identifier: str = None, labe
 async def get_mobdev2_lockdowns(
         udid: Optional[str] = None, pair_records: Optional[Path] = None, only_paired: bool = False,
         timeout: float = DEFAULT_BONJOUR_TIMEOUT) \
-        -> Generator[tuple[str, TcpLockdownClient], None, None]:
+        -> Generator:
     records = {}
     if pair_records is None:
         pair_records = get_home_folder()

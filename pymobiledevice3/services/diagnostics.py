@@ -968,7 +968,7 @@ class DiagnosticsService(LockdownService):
 
         super().__init__(lockdown, service_name, service=service)
 
-    def mobilegestalt(self, keys: list[str] = None) -> dict:
+    def mobilegestalt(self, keys: list = None) -> dict:
         if keys is None or len(keys) == 0:
             keys = MobileGestaltKeys
         response = self.service.send_recv_plist({'Request': 'MobileGestalt', 'MobileGestaltKeys': keys})

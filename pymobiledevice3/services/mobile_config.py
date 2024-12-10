@@ -260,7 +260,7 @@ class MobileConfigService(LockdownService):
         })
 
     def install_managed_profile(
-            self, display_name: str, payload_content: dict[str, Any], payload_uuid: str = str(uuid4()),
+            self, display_name: str, payload_content: dict, payload_uuid: str = str(uuid4()),
             keybag_file: Optional[Path] = None) -> None:
         profile_data = plistlib.dumps({
             'PayloadContent': [

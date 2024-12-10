@@ -21,7 +21,8 @@ from socket import create_connection
 from ssl import VerifyMode
 from typing import Optional, TextIO, cast
 
-import aiofiles
+if sys.platform != 'win32':
+    import aiofiles
 from construct import Const, Container
 from construct import Enum as ConstructEnum
 from construct import GreedyBytes, GreedyRange, Int8ul, Int16ub, Int64ul, Prefixed, Struct
@@ -330,7 +331,7 @@ class StartTcpTunnel(ABC):
         pass
 
     @abstractmethod
-    async def start_tcp_tunnel(self) -> AsyncGenerator[TunnelResult, None]:
+    async def start_tcp_tunnel(self) -> AsyncGenerator:
         pass
 
 
@@ -404,7 +405,7 @@ class RemotePairingProtocol(StartTcpTunnel):
     @asynccontextmanager
     async def start_quic_tunnel(
             self, secrets_log_file: Optional[TextIO] = None,
-            max_idle_timeout: float = RemotePairingQuicTunnel.MAX_IDLE_TIMEOUT) -> AsyncGenerator[TunnelResult, None]:
+            max_idle_timeout = RemotePairingQuicTunnel.MAX_IDLE_TIMEOUT) -> AsyncGenerator:
         private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         parameters = await self.create_quic_listener(private_key)
         cert = make_cert(private_key, private_key.public_key())
@@ -449,7 +450,7 @@ class RemotePairingProtocol(StartTcpTunnel):
                 'iOS 18.2+ removed QUIC protocol support. Use TCP instead (requires python3.13+)')
 
     @asynccontextmanager
-    async def start_tcp_tunnel(self) -> AsyncGenerator[TunnelResult, None]:
+    async def start_tcp_tunnel(self) -> AsyncGenerator:
         parameters = await self.create_tcp_listener()
         host = self.hostname
         port = parameters['port']
@@ -808,7 +809,7 @@ class RemotePairingProtocol(StartTcpTunnel):
         return response['message']['plain']['_0']
 
     @staticmethod
-    def decode_tlv(tlv_list: list[Container]) -> dict:
+    def decode_tlv(tlv_list: list) -> dict:
         result = {}
         for tlv in tlv_list:
             if tlv.type in result:
@@ -940,7 +941,7 @@ class CoreDeviceTunnelProxy(StartTcpTunnel):
         return self._lockdown.udid
 
     @asynccontextmanager
-    async def start_tcp_tunnel(self) -> AsyncGenerator['TunnelResult', None]:
+    async def start_tcp_tunnel(self) -> AsyncGenerator:
         self._service = await self._lockdown.aio_start_lockdown_service(self.SERVICE_NAME)
         tunnel = RemotePairingTcpTunnel(self._service.reader, self._service.writer)
         handshake_response = await tunnel.request_tunnel_establish()
@@ -990,7 +991,7 @@ async def start_tunnel_over_remotepairing(
         remote_pairing: RemotePairingTunnelService, secrets: Optional[TextIO] = None,
         max_idle_timeout: float = RemotePairingQuicTunnel.MAX_IDLE_TIMEOUT,
         protocol: TunnelProtocol = TunnelProtocol.QUIC) \
-        -> AsyncGenerator[TunnelResult, None]:
+        -> AsyncGenerator:
     async with remote_pairing:
         if protocol == TunnelProtocol.QUIC:
             async with remote_pairing.start_quic_tunnel(
@@ -1006,7 +1007,7 @@ async def start_tunnel_over_core_device(
         service_provider: CoreDeviceTunnelService, secrets: Optional[TextIO] = None,
         max_idle_timeout: float = RemotePairingQuicTunnel.MAX_IDLE_TIMEOUT,
         protocol: TunnelProtocol = TunnelProtocol.QUIC) \
-        -> AsyncGenerator[TunnelResult, None]:
+        -> AsyncGenerator:
     stop_remoted_if_required()
     async with service_provider:
         if protocol == TunnelProtocol.QUIC:
@@ -1024,7 +1025,7 @@ async def start_tunnel_over_core_device(
 async def start_tunnel(
         protocol_handler: RemotePairingProtocol, secrets: Optional[TextIO] = None,
         max_idle_timeout: float = RemotePairingQuicTunnel.MAX_IDLE_TIMEOUT,
-        protocol: TunnelProtocol = TunnelProtocol.QUIC) -> AsyncGenerator[TunnelResult, None]:
+        protocol: TunnelProtocol = TunnelProtocol.QUIC) -> AsyncGenerator:
     if isinstance(protocol_handler, CoreDeviceTunnelService):
         async with start_tunnel_over_core_device(
                 protocol_handler, secrets=secrets, max_idle_timeout=max_idle_timeout, protocol=protocol) as service:
@@ -1044,7 +1045,7 @@ async def start_tunnel(
 
 async def get_core_device_tunnel_services(
         bonjour_timeout: float = DEFAULT_BONJOUR_TIMEOUT,
-        udid: Optional[str] = None) -> list[CoreDeviceTunnelService]:
+        udid: Optional[str] = None) -> list:
     result = []
     for rsd in await get_rsds(bonjour_timeout=bonjour_timeout, udid=udid):
         if udid is None and ((Version(rsd.product_version) < Version('17.0'))
@@ -1063,7 +1064,7 @@ async def get_core_device_tunnel_services(
 
 async def get_remote_pairing_tunnel_services(
         bonjour_timeout: float = DEFAULT_BONJOUR_TIMEOUT,
-        udid: Optional[str] = None) -> list[RemotePairingTunnelService]:
+        udid: Optional[str] = None) -> list:
     result = []
     for answer in await browse_remotepairing(timeout=bonjour_timeout):
         for ip in answer.ips:

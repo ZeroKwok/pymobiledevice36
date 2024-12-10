@@ -21,7 +21,7 @@ webinspector_logger_handlers = {
 
 
 class JSObjectPreview(UserDict):
-    def __init__(self, properties: list[dict]):
+    def __init__(self, properties: list):
         super().__init__()
         for p in properties:
             name = p['name']
@@ -30,7 +30,7 @@ class JSObjectPreview(UserDict):
 
 
 class JSObjectProperties(UserDict):
-    def __init__(self, properties: list[dict]):
+    def __init__(self, properties: list):
         super().__init__()
         for p in properties:
             name = p['name']

@@ -70,7 +70,7 @@ class CrashReportsManager:
             if item != self.APPSTORED_PATH:
                 raise AfcException(f'failed to clear crash reports directory, undeleted items: {undeleted_items}', None)
 
-    def ls(self, path: str = '/', depth: int = 1) -> list[str]:
+    def ls(self, path: str = '/', depth: int = 1) -> list:
         """
         List file and folder in the crash report's directory.
         :param path: Path to list, relative to the crash report's directory.

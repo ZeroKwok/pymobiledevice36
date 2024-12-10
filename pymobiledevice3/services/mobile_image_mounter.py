@@ -36,7 +36,7 @@ class MobileImageMounterService(LockdownService):
         if Version(self.lockdown.product_version).major >= 16 and not self.lockdown.developer_mode_status:
             raise DeveloperModeIsNotEnabledError()
 
-    def copy_devices(self) -> list[dict]:
+    def copy_devices(self) -> list:
         """ Copy mounted devices list. """
         try:
             return self.service.send_recv_plist({'Command': 'CopyDevices'})['EntryList']

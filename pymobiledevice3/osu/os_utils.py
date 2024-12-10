@@ -40,7 +40,7 @@ class OsUtils:
         raise FeatureNotSupportedError(self._os_name, inspect.currentframe().f_code.co_name)
 
     @property
-    def usbmux_address(self) -> tuple[str, int]:
+    def usbmux_address(self) -> tuple:
         raise FeatureNotSupportedError(self._os_name, inspect.currentframe().f_code.co_name)
 
     @property
@@ -59,7 +59,7 @@ class OsUtils:
     def pair_record_path(self) -> Path:
         raise FeatureNotSupportedError(self._os_name, inspect.currentframe().f_code.co_name)
 
-    def get_ipv6_ips(self) -> list[str]:
+    def get_ipv6_ips(self) -> list:
         raise FeatureNotSupportedError(self._os_name, inspect.currentframe().f_code.co_name)
 
     def set_keepalive(self, sock: socket.socket, after_idle_sec: int = DEFAULT_AFTER_IDLE_SEC,

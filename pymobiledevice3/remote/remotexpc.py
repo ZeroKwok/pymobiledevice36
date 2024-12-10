@@ -10,7 +10,7 @@ from construct import StreamError
 from hyperframe.frame import DataFrame, Frame, GoAwayFrame, HeadersFrame, RstStreamFrame, SettingsFrame, \
     WindowUpdateFrame
 
-from traitlets.config import Config
+
 
 from pymobiledevice3.exceptions import StreamClosedError
 from pymobiledevice3.remote.xpc_message import XpcFlags, XpcInt64Type, XpcUInt64Type, XpcWrapper, create_xpc_wrapper, \
@@ -36,10 +36,10 @@ resp = await client.send_receive_request({"Command": "DoSomething"})
 
 
 class RemoteXPCConnection:
-    def __init__(self, address: tuple[str, int]):
+    def __init__(self, address: tuple):
         self._previous_frame_data = b''
         self.address = address
-        self.next_message_id: dict[int, int] = {ROOT_CHANNEL: 0, REPLY_CHANNEL: 0}
+        self.next_message_id: dict = {ROOT_CHANNEL: 0, REPLY_CHANNEL: 0}
         self.peer_info = None
         self._reader: Optional[asyncio.StreamReader] = None
         self._writer: Optional[asyncio.StreamWriter] = None
@@ -72,7 +72,7 @@ class RemoteXPCConnection:
         self._writer.write(DataFrame(stream_id=ROOT_CHANNEL, data=xpc_wrapper).serialize())
         await self._writer.drain()
 
-    async def iter_file_chunks(self, total_size: int, file_idx: int = 0) -> Generator[bytes, None, None]:
+    async def iter_file_chunks(self, total_size: int, file_idx: int = 0) -> Generator:
         stream_id = (file_idx + 1) * 2
         await self._open_channel(stream_id, XpcFlags.FILE_TX_STREAM_RESPONSE)
         size = 0
@@ -118,13 +118,15 @@ class RemoteXPCConnection:
         return await self.receive_response()
 
     def shell(self) -> None:
+        import IPython
+        from traitlets.config import Config
+        from pygments import formatters, highlight, lexers
+        
         nest_asyncio.apply(asyncio.get_running_loop())
         sys.argv = ['a']
         config = Config()
         config.InteractiveShellApp.exec_lines = ['%autoawait asyncio']
 
-        import IPython
-        from pygments import formatters, highlight, lexers
         print(highlight(SHELL_USAGE, lexers.PythonLexer(),
                         formatters.Terminal256Formatter(style='native')))
         IPython.start_ipython(config=config, user_ns={

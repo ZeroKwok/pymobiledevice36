@@ -68,9 +68,9 @@ class RestoredClient:
         return await self.service.aio_recv_plist()
 
     @cached_property
-    async def hardware_info(self) -> dict[str, Any]:
+    async def hardware_info(self) -> dict:
         return (await self.query_value('HardwareInfo'))['HardwareInfo']
 
     @property
-    async def saved_debug_info(self) -> dict[str, Any]:
+    async def saved_debug_info(self) -> dict:
         return (await self.query_value('SavedDebugInfo'))['SavedDebugInfo']

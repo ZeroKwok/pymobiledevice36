@@ -18,7 +18,7 @@ class AppServiceService(CoreDeviceService):
 
     async def list_apps(self, include_app_clips: bool = True, include_removable_apps: bool = True,
                         include_hidden_apps: bool = True, include_internal_apps: bool = True,
-                        include_default_apps: bool = True) -> list[dict]:
+                        include_default_apps: bool = True) -> list:
         """ List applications """
         return await self.invoke('com.apple.coredevice.feature.listapps', {
             'includeAppClips': include_app_clips, 'includeRemovableApps': include_removable_apps,
@@ -26,9 +26,9 @@ class AppServiceService(CoreDeviceService):
             'includeDefaultApps': include_default_apps})
 
     async def launch_application(
-            self, bundle_id: str, arguments: Optional[list[str]] = None, kill_existing: bool = True,
+            self, bundle_id: str, arguments: Optional[list] = None, kill_existing: bool = True,
             start_suspended: bool = False, environment: Optional[dict] = None, extra_options: Optional[dict] = None) \
-            -> list[dict]:
+            -> list:
         """ launch application """
         return await self.invoke('com.apple.coredevice.feature.launchapplication', {
             'applicationSpecifier': {
@@ -47,7 +47,7 @@ class AppServiceService(CoreDeviceService):
             },
         })
 
-    async def list_processes(self) -> list[dict]:
+    async def list_processes(self) -> list:
         """ List processes """
         return (await self.invoke('com.apple.coredevice.feature.listprocesses'))['processTokens']
 
@@ -62,7 +62,7 @@ class AppServiceService(CoreDeviceService):
                 'relative': '/'
             }})
 
-    async def spawn_executable(self, executable: str, arguments: list[str]) -> dict:
+    async def spawn_executable(self, executable: str, arguments: list) -> dict:
         """
         Spawn given executable.
 

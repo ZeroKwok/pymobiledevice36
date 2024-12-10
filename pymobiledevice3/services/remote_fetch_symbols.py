@@ -20,8 +20,8 @@ class RemoteFetchSymbolsService(RemoteService):
     def __init__(self, rsd: RemoteServiceDiscoveryService):
         super().__init__(rsd, self.SERVICE_NAME)
 
-    async def get_dsc_file_list(self) -> list[DSCFile]:
-        files: list[DSCFile] = []
+    async def get_dsc_file_list(self) -> list:
+        files: list = []
         response = await self.service.send_receive_request({'XPCDictionary_sideChannel': uuid.uuid4(), 'DSCFilePaths': []})
         file_count = response['DSCFilePaths']
         for i in range(file_count):

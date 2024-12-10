@@ -410,7 +410,7 @@ def create_mux(usbmux_address: Optional[str] = None) -> MuxConnection:
     return MuxConnection.create(usbmux_address=usbmux_address)
 
 
-def list_devices(usbmux_address: Optional[str] = None) -> list[MuxDevice]:
+def list_devices(usbmux_address: Optional[str] = None) -> list:
     mux = create_mux(usbmux_address=usbmux_address)
     mux.get_device_list(0.1)
     devices = mux.devices
@@ -444,7 +444,7 @@ def select_device(udid: str = None, connection_type: str = None, usbmux_address:
     return tmp
 
 
-def select_devices_by_connection_type(connection_type: str, usbmux_address: Optional[str] = None) -> list[MuxDevice]:
+def select_devices_by_connection_type(connection_type: str, usbmux_address: Optional[str] = None) -> list:
     """
     select all UsbMux devices by connection type
     """

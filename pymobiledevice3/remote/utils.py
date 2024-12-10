@@ -13,7 +13,7 @@ REMOTED_PATH = '/usr/libexec/remoted'
 
 
 async def get_rsds(bonjour_timeout: float = DEFAULT_BONJOUR_TIMEOUT, udid: Optional[str] = None) -> \
-        list[RemoteServiceDiscoveryService]:
+        list:
     result = []
     with stop_remoted():
         for answer in await browse_remoted(timeout=bonjour_timeout):
@@ -81,7 +81,7 @@ def resume_remoted_if_required() -> None:
 
 
 @contextlib.contextmanager
-def stop_remoted() -> Generator[None, None, None]:
+def stop_remoted() -> Generator:
     stop_remoted_if_required()
     try:
         yield

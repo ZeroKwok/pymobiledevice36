@@ -3,7 +3,7 @@ import random
 import time
 from abc import abstractmethod
 
-import gpxpy
+
 
 
 class LocationSimulationBase:
@@ -19,6 +19,7 @@ class LocationSimulationBase:
         pass
 
     def play_gpx_file(self, filename: str, disable_sleep: bool = False, timing_randomness_range: int = 0):
+        import gpxpy
         with open(filename) as f:
             gpx = gpxpy.parse(f)
 

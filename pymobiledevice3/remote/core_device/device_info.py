@@ -24,7 +24,7 @@ class DeviceInfoService(CoreDeviceService):
         """
         return await self.invoke('com.apple.coredevice.feature.getdisplayinfo', {})
 
-    async def query_mobilegestalt(self, keys: list[str]) -> dict:
+    async def query_mobilegestalt(self, keys: list) -> dict:
         """
         Query MobileGestalt.
 

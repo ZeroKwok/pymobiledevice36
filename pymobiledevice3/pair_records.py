@@ -151,7 +151,7 @@ def get_remote_pairing_record_filename(identifier: str) -> str:
     return f'remote_{identifier}'
 
 
-def iter_remote_pair_records() -> Generator[Path, None, None]:
+def iter_remote_pair_records() -> Generator:
     """
     Iterate over the remote pairing records in the home folder.
 
@@ -161,7 +161,7 @@ def iter_remote_pair_records() -> Generator[Path, None, None]:
     return get_home_folder().glob('remote_*')
 
 
-def iter_remote_paired_identifiers() -> Generator[str, None, None]:
+def iter_remote_paired_identifiers() -> Generator:
     """
     Iterate over the identifiers of the remote paired devices.
 

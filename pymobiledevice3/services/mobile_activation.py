@@ -38,8 +38,8 @@ class Field:
 class ActivationForm:
     title: str
     description: str
-    fields: list[Field]
-    server_info: dict[str, str]
+    fields: list
+    server_info: dict
 
 
 class MobileActivationService:

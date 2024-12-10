@@ -21,7 +21,7 @@ class Posix(OsUtils):
         return os.geteuid() == 0
 
     @property
-    def usbmux_address(self) -> tuple[str, int]:
+    def usbmux_address(self) -> tuple:
         return MuxConnection.USBMUXD_PIPE, socket.AF_UNIX
 
     @property
@@ -32,7 +32,7 @@ class Posix(OsUtils):
     def access_denied_error(self) -> str:
         return 'This command requires root privileges. Consider retrying with "sudo".'
 
-    def get_ipv6_ips(self) -> list[str]:
+    def get_ipv6_ips(self) -> list:
         return [f'{adapter.ips[0].ip[0]}%{adapter.nice_name}' for adapter in get_adapters() if
                 adapter.ips[0].is_IPv6 and not adapter.nice_name.startswith('tun')]
 
@@ -88,5 +88,5 @@ class Linux(Posix):
 
 class Cygwin(Posix):
     @property
-    def usbmux_address(self) -> tuple[str, int]:
+    def usbmux_address(self) -> tuple:
         return MuxConnection.ITUNES_HOST, socket.AF_INET

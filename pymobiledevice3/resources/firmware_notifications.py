@@ -13,7 +13,7 @@ def get_notifications():
         return f.read().decode().split('\n')
 
 
-def save_notifications(notifications: list[str]):
+def save_notifications(notifications: list):
     with open(NOTIFICATIONS_FILENAME, 'wb') as f:
         notifications.sort()
         f.write('\n'.join(notifications).encode())

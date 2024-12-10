@@ -305,7 +305,7 @@ class InvalidServiceError(LockdownError):
 
 class InspectorEvaluateError(PyMobileDevice3Exception):
     def __init__(self, class_name: str, message: str, line: Optional[int] = None, column: Optional[int] = None,
-                 stack: Optional[list[str]] = None):
+                 stack: Optional[list] = None):
         super().__init__()
         self.class_name = class_name
         self.message = message

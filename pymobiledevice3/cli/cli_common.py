@@ -130,7 +130,7 @@ def sudo_required(func):
     return wrapper
 
 
-def prompt_selection(choices: list[Any], message: str, idx: bool = False) -> Any:
+def prompt_selection(choices: list, message: str, idx: bool = False) -> Any:
     question = [inquirer3.List('selection', message=message, choices=choices, carousel=True)]
     try:
         result = inquirer3.prompt(question, theme=GreenPassion(), raise_keyboard_interrupt=True)
@@ -233,7 +233,7 @@ class RSDCommand(BaseServiceProviderCommand):
                            f'This option may also be transferred as an environment variable: {TUNNEL_ENV_VAR}')
         ]
 
-    def rsd(self, ctx, param: str, value: Optional[tuple[str, int]]) -> Optional[RemoteServiceDiscoveryService]:
+    def rsd(self, ctx, param: str, value: Optional[tuple]) -> Optional[RemoteServiceDiscoveryService]:
         if value is not None:
             rsd = RemoteServiceDiscoveryService(value)
             asyncio.run(rsd.connect(), debug=True)

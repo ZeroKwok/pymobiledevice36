@@ -45,7 +45,7 @@ class FileServiceService(CoreDeviceService):
             'User': 'mobile'})
         self.session = response['NewSessionID']
 
-    async def retrieve_directory_list(self, path: str = '.') -> AsyncGenerator[list[str], None]:
+    async def retrieve_directory_list(self, path: str = '.') -> AsyncGenerator[list, None]:
         return (await self.send_receive_request({
             'Cmd': 'RetrieveDirectoryList', 'MessageUUID': str(uuid.uuid4()), 'Path': path, 'SessionID': self.session}
         ))['FileList']

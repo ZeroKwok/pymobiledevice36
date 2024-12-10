@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import asn1
 import requests
-from ipsw_parser.img4 import COMPONENT_FOURCC
+
 
 from pymobiledevice3.exceptions import PyMobileDevice3Exception
 from pymobiledevice3.utils import bytes_to_uint, plist_access_path
@@ -26,7 +26,7 @@ def get_with_or_without_comma(obj: dict, k: str, default=None):
     return val
 
 
-def is_fw_payload(info: dict[str, typing.Any]) -> bool:
+def is_fw_payload(info: dict) -> bool:
     return (info.get('IsFirmwarePayload') or info.get('IsSecondaryFirmwarePayload') or info.get('IsFUDFirmware') or
             info.get('IsLoadedByiBoot') or info.get('IsEarlyAccessFirmware') or info.get('IsiBootEANFirmware') or
             info.get('IsiBootNonEssentialFirmware'))
@@ -740,6 +740,7 @@ class TSSRequest:
                     comp = manifest[k]['Info'].get('Img4PayloadType')
 
                 if comp is None:
+                    from ipsw_parser.img4 import COMPONENT_FOURCC
                     comp = COMPONENT_FOURCC.get(k)
 
                 if comp is None:

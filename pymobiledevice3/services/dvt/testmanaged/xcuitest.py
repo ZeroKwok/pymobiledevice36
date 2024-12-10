@@ -265,7 +265,7 @@ class XCUITestService:
         return pid
 
 
-def get_app_info(service_provider: LockdownClient, bundle_id: str) -> dict[str, Any]:
+def get_app_info(service_provider: LockdownClient, bundle_id: str) -> dict:
     with InstallationProxyService(lockdown=service_provider) as install_service:
         apps = install_service.get_apps(bundle_identifiers=[bundle_id])
         if not apps:

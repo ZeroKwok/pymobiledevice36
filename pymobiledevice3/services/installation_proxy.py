@@ -233,7 +233,7 @@ class InstallationProxyService(LockdownService):
 
         return self.service.send_recv_plist(cmd).get('LookupResult')
 
-    def browse(self, options: Optional[dict] = None, attributes: list[str] = None) -> list[dict]:
+    def browse(self, options: Optional[dict] = None, attributes: list = None) -> list:
         if options is None:
             options = {}
         if attributes:
@@ -267,7 +267,7 @@ class InstallationProxyService(LockdownService):
         return self.service.send_recv_plist(cmd).get('LookupResult')
 
     def get_apps(self, application_type: str = 'Any', calculate_sizes: bool = False,
-                 bundle_identifiers: Optional[list[str]] = None) -> dict[str, dict]:
+                 bundle_identifiers: Optional[list] = None) -> dict:
         """ get applications according to given criteria """
         options = {}
         if bundle_identifiers is not None:

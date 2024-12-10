@@ -28,7 +28,7 @@ RSD_PORT = 58783
 
 
 class RemoteServiceDiscoveryService(LockdownServiceProvider):
-    def __init__(self, address: tuple[str, int], name: Optional[str] = None) -> None:
+    def __init__(self, address: tuple, name: Optional[str] = None) -> None:
         super().__init__()
         self.name = name
         self.service = RemoteXPCConnection(address)
@@ -140,7 +140,7 @@ class RemoteServiceDiscoveryService(LockdownServiceProvider):
                 f'UDID:{self.udid}{name_str}>')
 
 
-async def get_remoted_devices(timeout: float = DEFAULT_BONJOUR_TIMEOUT) -> list[RSDDevice]:
+async def get_remoted_devices(timeout: float = DEFAULT_BONJOUR_TIMEOUT) -> list:
     result = []
     for hostname in await browse_remoted(timeout):
         with RemoteServiceDiscoveryService((hostname, RSD_PORT)) as rsd:

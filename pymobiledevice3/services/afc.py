@@ -354,7 +354,7 @@ class AfcService(LockdownService):
             raise
 
     @path_to_str()
-    def rm(self, filename: str, match: Optional[Pattern] = None, force: bool = False) -> list[str]:
+    def rm(self, filename: str, match: Optional[Pattern] = None, force: bool = False) -> list:
         """ recursive removal of a directory or a file
 
         if did not succeed, return list of undeleted filenames or raise exception depending on force parameter.
@@ -871,7 +871,7 @@ class AfcShell:
     def _do_cat(self, filename: str):
         print(try_decode(self.afc.get_file_contents(self.relative_path(filename))))
 
-    def _do_rm(self, file: Annotated[list[str], Arg(nargs='+', completer=path_completer)]):
+    def _do_rm(self, file: Annotated[list, Arg(nargs='+', completer=path_completer)]):
         for filename in file:
             self.afc.rm(self.relative_path(filename))
 

@@ -56,8 +56,8 @@ class TunneldCore:
     def __init__(self, protocol: TunnelProtocol = TunnelProtocol.DEFAULT, wifi_monitor: bool = True,
                  usb_monitor: bool = True, usbmux_monitor: bool = True, mobdev2_monitor: bool = True) -> None:
         self.protocol = protocol
-        self.tasks: list[asyncio.Task] = []
-        self.tunnel_tasks: dict[str, TunnelTask] = {}
+        self.tasks: list = []
+        self.tunnel_tasks: dict = {}
         self.usb_monitor = usb_monitor
         self.wifi_monitor = wifi_monitor
         self.usbmux_monitor = usbmux_monitor
@@ -353,7 +353,7 @@ class TunneldRunner:
                                          usbmux_monitor=usbmux_monitor, mobdev2_monitor=mobdev2_monitor)
 
         @self._app.get('/')
-        async def list_tunnels() -> dict[str, list[dict]]:
+        async def list_tunnels() -> dict:
             """ Retrieve the available tunnels and format them as {UUID: TUNNEL_ADDRESS} """
             tunnels = {}
             for ip, active_tunnel in self._tunneld_core.tunnel_tasks.items():
@@ -477,18 +477,18 @@ class TunneldRunner:
         uvicorn.run(self._app, host=self.host, port=self.port, loop='asyncio')
 
 
-async def async_get_tunneld_devices(tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) \
-        -> list[RemoteServiceDiscoveryService]:
+async def async_get_tunneld_devices(tunneld_address: tuple = TUNNELD_DEFAULT_ADDRESS) \
+        -> list:
     tunnels = _list_tunnels(tunneld_address)
     return await _create_rsds_from_tunnels(tunnels)
 
 
-def get_tunneld_devices(tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) \
-        -> list[RemoteServiceDiscoveryService]:
+def get_tunneld_devices(tunneld_address: tuple = TUNNELD_DEFAULT_ADDRESS) \
+        -> list:
     return get_asyncio_loop().run_until_complete(async_get_tunneld_devices(tunneld_address))
 
 
-async def async_get_tunneld_device_by_udid(udid: str, tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) \
+async def async_get_tunneld_device_by_udid(udid: str, tunneld_address: tuple = TUNNELD_DEFAULT_ADDRESS) \
         -> Optional[RemoteServiceDiscoveryService]:
     tunnels = _list_tunnels(tunneld_address)
     if udid not in tunnels:
@@ -497,12 +497,12 @@ async def async_get_tunneld_device_by_udid(udid: str, tunneld_address: tuple[str
     return rsds[0]
 
 
-def get_tunneld_device_by_udid(udid: str, tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) \
+def get_tunneld_device_by_udid(udid: str, tunneld_address: tuple = TUNNELD_DEFAULT_ADDRESS) \
         -> Optional[RemoteServiceDiscoveryService]:
     return get_asyncio_loop().run_until_complete(async_get_tunneld_device_by_udid(udid, tunneld_address))
 
 
-def _list_tunnels(tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) -> dict[str, list[dict]]:
+def _list_tunnels(tunneld_address: tuple = TUNNELD_DEFAULT_ADDRESS) -> dict:
     try:
         # Get the list of tunnels from the specified address
         resp = requests.get(f'http://{tunneld_address[0]}:{tunneld_address[1]}')
@@ -512,7 +512,7 @@ def _list_tunnels(tunneld_address: tuple[str, int] = TUNNELD_DEFAULT_ADDRESS) ->
     return tunnels
 
 
-async def _create_rsds_from_tunnels(tunnels: dict[str, list[dict]]) -> list[RemoteServiceDiscoveryService]:
+async def _create_rsds_from_tunnels(tunnels: dict) -> list:
     rsds = []
     for udid, details in tunnels.items():
         for tunnel_details in details:

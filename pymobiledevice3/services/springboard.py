@@ -46,7 +46,7 @@ class SpringBoardServicesService(LockdownService):
     def get_wallpaper_pngdata(self) -> bytes:
         return self.service.send_recv_plist({'command': 'getHomeScreenWallpaperPNGData'}).get('pngData')
 
-    def get_homescreen_icon_metrics(self) -> dict[str, float]:
+    def get_homescreen_icon_metrics(self) -> dict:
         return self.service.send_recv_plist({'command': 'getHomeScreenIconMetrics'})
 
     def get_wallpaper_info(self, wallpaper_name: str) -> dict:

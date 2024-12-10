@@ -258,7 +258,7 @@ def cdp(service_provider: LockdownClient, host, port):
                 ws_ping_timeout=None, ws='wsproto', loop='asyncio')
 
 
-def get_js_completions(jsshell: 'JsShell', obj: str, prefix: str) -> list[Completion]:
+def get_js_completions(jsshell: 'JsShell', obj: str, prefix: str) -> list:
     if obj in JS_RESERVED_WORDS:
         return []
 

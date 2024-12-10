@@ -90,7 +90,7 @@ class WebDriver(SeleniumApi):
         elem = self.session.find_elements(by, value)
         return None if elem is None else WebElement(self.session, elem)
 
-    def find_elements(self, by=By.ID, value=None) -> list[WebElement]:
+    def find_elements(self, by=By.ID, value=None) -> list:
         """ Find elements given a By strategy and locator. """
         elements = self.session.find_elements(by, value, single=False)
         return list(map(lambda elem: WebElement(self.session, elem), elements))
@@ -117,7 +117,7 @@ class WebDriver(SeleniumApi):
             if cookie.name == name:
                 return cookie
 
-    def get_cookies(self) -> list[Cookie]:
+    def get_cookies(self) -> list:
         """ Returns cookies visible in the current session. """
         return list(map(Cookie.from_automation, self.session.get_all_cookies()))
 
@@ -190,6 +190,6 @@ class WebDriver(SeleniumApi):
         return self.session.evaluate_js_function('function() { return document.title; }')
 
     @property
-    def window_handles(self) -> list[str]:
+    def window_handles(self) -> list:
         """ Returns the handles of all windows within the current session. """
         return self.session.get_window_handles()

@@ -46,7 +46,7 @@ class MisagentService(LockdownService):
 
         return response
 
-    def copy_all(self) -> list[ProvisioningProfile]:
+    def copy_all(self) -> list:
         response = self.service.send_recv_plist({'MessageType': 'CopyAll',
                                                  'ProfileType': 'Provisioning'})
         if response['Status']:

@@ -212,7 +212,7 @@ class WebinspectorService:
     async def setup_inspector_socket(self, session_id: str, app_id: str, page_id: int):
         await self._forward_socket_setup(session_id, app_id, page_id, pause=False)
 
-    def find_page_id(self, page_id: str) -> tuple[Application, Page]:
+    def find_page_id(self, page_id: str) -> tuple:
         for app_id in self.application_pages:
             for page in self.application_pages[app_id]:
                 if page == page_id:
@@ -225,7 +225,7 @@ class WebinspectorService:
         return self.loop.run_until_complete(asyncio.ensure_future(awaitable, loop=self.loop))
 
     def _handle_recv(self, plist):
-        self.receive_handlers[plist['__selector']](plist['__argument'])
+        self.receive_handlers[plist](plist)
 
     def _handle_report_current_state(self, arg):
         self.state = arg['WIRAutomationAvailabilityKey']

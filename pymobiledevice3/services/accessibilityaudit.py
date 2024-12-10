@@ -263,11 +263,11 @@ class AccessibilityAudit(RemoteServer):
             self.recv_plist()
 
     @property
-    def capabilities(self) -> list[str]:
+    def capabilities(self) -> list:
         self.broadcast.deviceCapabilities()
         return self.recv_plist()[0]
 
-    def run_audit(self, value: list) -> list[AXAuditIssue_v1]:
+    def run_audit(self, value: list) -> list:
         if self.product_version >= Version('15.0'):
             self.broadcast.deviceBeginAuditTypes_(MessageAux().append_obj(value))
         else:
@@ -287,7 +287,7 @@ class AccessibilityAudit(RemoteServer):
         return deserialize_object(self.recv_plist()[0])
 
     @property
-    def settings(self) -> list[AXAuditDeviceSetting_v1]:
+    def settings(self) -> list:
         self.broadcast.deviceAccessibilitySettings()
         return deserialize_object(self.recv_plist()[0])
 
