@@ -39,8 +39,8 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 ./py39/python.exe -m pip install --index-url http://192.168.3.225:8080/simple/ --trusted-host 192.168.3.225 pytest pytest_asyncio
 ./py39/python.exe -m pytest -W ignore::UserWarning
 ./py39/python.exe -m pytest tests/services/test_afc.py -W ignore::UserWarning
- ./py39/python.exe example/location.py
- ./py39/python.exe example/location.py unset
+./py39/python.exe example/location.py
+./py39/python.exe example/location.py unset
 ```
 
 ## 实现路线
@@ -51,17 +51,17 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
    1. [x] 剔除 restore 仅该模块需要的依赖
    1. [x] 编写 location.py
    1. [x] 运行 location.py 并初步测试通过
-   1. [ ] 检查 location.py 执行流程中所有加载的依赖(必要的)
-   1. [ ] 剔除 前一步中不需要的依赖
-   1. [ ] 运行 location.py 并初步测试通过
+   1. [x] 检查 location.py 执行流程中所有加载的依赖(必要的)
+   1. [x] 剔除 前一步中不需要的依赖
+   1. [x] 运行 location.py 并初步测试通过
 2. 在3.8 版本中跑通
-   1. [ ] 安装 依赖项
-      1. [ ] 依赖项缺失, 版本不兼容: 讨论, 寻找替代品
-   2. [ ] 运行 location.py, 并输出错误
-   3. [ ] 检查 输出错误
-      1. [ ] 错误在源码中: 结合 GPT 修改
-      2. [ ] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
-   4. [ ] 运行 location.py 并初步测试通过
+   1. [x] 安装 依赖项
+      1. [x] 依赖项缺失, 版本不兼容: 讨论, 寻找替代品
+   2. [x] 运行 location.py, 并输出错误
+   3. [x] 检查 输出错误
+      1. [x] 错误在源码中: 结合 GPT 修改
+      2. [x] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
+   4. [x] 运行 location.py 并初步测试通过
 3. 在3.6 版本中跑通
    1. [ ] 安装 依赖项, 依赖项缺失: 讨论, 寻找替代品
    2. [ ] 运行 location.py, 并输出错误
@@ -78,19 +78,25 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 - construct
 - packaging
 - cryptography
-- plistlib
+- bpylist2
 
 可剔除依赖:
 
 - cli/IPython
 - cli/pygments
 - restore/ipsw_parser
+- services/mobile_image_mounter.py/developer_disk_image
+- services/webinspector.py/prompt_toolkit, wsproto
+- services/web_protocol/cdp_screencast.py/Pillow
+- [restore/recovery.py|irecv.py]/pyusb
 
 可选的不影响迁移的依赖:
 
 - inquirer3
 - [cli|restore]/tqdm
 - [restore|installation_proxy.py]/zipfile
+- tunnel_service.py/aiofiles (`sys.platform != 'win32'`)
+- services/dvt/instruments/location_simulation_base.py/gpxpy
 
 ### py36
 
