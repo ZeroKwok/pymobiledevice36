@@ -39,6 +39,8 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 ./py39/python.exe -m pip install --index-url http://192.168.3.225:8080/simple/ --trusted-host 192.168.3.225 pytest pytest_asyncio
 ./py39/python.exe -m pytest -W ignore::UserWarning
 ./py39/python.exe -m pytest tests/services/test_afc.py -W ignore::UserWarning
+ ./py39/python.exe example/location.py
+ ./py39/python.exe example/location.py unset
 ```
 
 ## 实现路线
@@ -47,8 +49,8 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
    1. [x] 剔除 cli 模块
    1. [x] 剔除 services 流程不需要的依赖
    1. [x] 剔除 restore 仅该模块需要的依赖
-   1. [ ] 编写 location.py
-   1. [ ] 运行 location.py 并初步测试通过
+   1. [x] 编写 location.py
+   1. [x] 运行 location.py 并初步测试通过
    1. [ ] 检查 location.py 执行流程中所有加载的依赖(必要的)
    1. [ ] 剔除 前一步中不需要的依赖
    1. [ ] 运行 location.py 并初步测试通过
