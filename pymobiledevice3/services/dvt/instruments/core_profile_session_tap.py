@@ -6,7 +6,6 @@ from io import BytesIO
 
 from construct import Array, Byte, Bytes, Computed, CString, Enum, FixedSized, GreedyBytes, GreedyRange, GreedyString, \
     Int16ul, Int32ul, Int64ul, LazyBound, Padded, Padding, Pass, Struct, Switch, this
-from pykdebugparser.kd_buf_parser import RAW_VERSION2_BYTES
 
 from pymobiledevice3.exceptions import ExtractingStackshotError
 from pymobiledevice3.resources.dsc_uuid_map import get_dsc_map
@@ -616,6 +615,7 @@ class CoreProfileSessionTap(Tap):
         """
         Get a stackshot from the tap.
         """
+        from pykdebugparser.kd_buf_parser import RAW_VERSION2_BYTES
         if self.stack_shot is not None:
             # The stackshot is sent one per TAP creation, so we cache it.
             return self.stack_shot

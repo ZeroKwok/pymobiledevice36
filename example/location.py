@@ -65,12 +65,20 @@ def idevice(udid=None, connection_type='USB'):
 
 
 def make_dvt_service(idevice, host, port):
-    rsds = asyncio.run(async_get_tunneld_devices((host, port)))
+    if sys.version_info >= (3, 8):
+        rsds = asyncio.run(async_get_tunneld_devices((host, port)))
+    else:
+        rsds = asyncio.get_event_loop().run_until_complete(async_get_tunneld_devices((host, port)))
+        
+    print(f'idevice={idevice}, rsds={rsds}')
     service_provider = [rsd for rsd in rsds if rsd.udid == idevice.serial][0]
     return DvtSecureSocketProxyService(service_provider)
 
 def mounter_ddi(idevice):
-    asyncio.run(auto_mount(idevice.lockdown), debug=True)
+    if sys.version_info >= (3, 8):
+        asyncio.run(auto_mount(idevice.lockdown), debug=True)
+    else:
+        asyncio.get_event_loop().run_until_complete(auto_mount(idevice.lockdown))
 
 def done():
     print('Done!')

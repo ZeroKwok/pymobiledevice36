@@ -6,7 +6,6 @@ from contextlib import closing
 from pathlib import Path
 
 import click
-import inquirer3
 import requests
 
 from pymobiledevice3.exceptions import MobileActivationException
@@ -98,6 +97,8 @@ class MobileActivationService:
             activation_form = self._get_activation_form_from_response(content.decode())
             click.secho(activation_form.title, bold=True)
             click.secho(activation_form.description)
+
+            import inquirer3
             fields = []
             for field in activation_form.fields:
                 if field.secure:

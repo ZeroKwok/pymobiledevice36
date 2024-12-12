@@ -56,18 +56,18 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
    1. [x] 运行 location.py 并初步测试通过
 2. 在3.8 版本中跑通
    1. [x] 安装 依赖项
-      1. [x] 依赖项缺失, 版本不兼容: 讨论, 寻找替代品
+      1. [x] 依赖项缺失, 版本不兼容
    2. [x] 运行 location.py, 并输出错误
    3. [x] 检查 输出错误
-      1. [x] 错误在源码中: 结合 GPT 修改
-      2. [x] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
+      1. [x] 错误在源码中
+      2. [x] 错误在依赖库中
    4. [x] 运行 location.py 并初步测试通过
 3. 在3.6 版本中跑通
-   1. [ ] 安装 依赖项, 依赖项缺失: 讨论, 寻找替代品
-   2. [ ] 运行 location.py, 并输出错误
+   1. [x] 安装 依赖项, 处理依赖项缺失
+   2. [x] 运行 location.py, 并输出错误
    3. [ ] 检查 输出错误
-      1. [ ] 错误在源码中: 结合 GPT 修改
-      2. [ ] 错误在依赖库中: 需要视情况而定, 可直接修改, 可能接口变更
+      1. [ ] 错误在源码中
+      2. [ ] 错误在依赖库中
    4. [ ] 运行 location.py 并初步测试通过
 
 ## 依赖记录
@@ -94,6 +94,7 @@ sudo ./py39/python.exe -m pymobiledevice3 remote tunneld
 
 - inquirer3
 - [cli|restore]/tqdm
+- [cli|services/mobile_activation.py]/inquirer3
 - [restore|installation_proxy.py]/zipfile
 - tunnel_service.py/aiofiles (`sys.platform != 'win32'`)
 - services/dvt/instruments/location_simulation_base.py/gpxpy

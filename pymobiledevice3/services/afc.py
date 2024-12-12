@@ -12,7 +12,6 @@ import sys
 import warnings
 from collections import namedtuple
 from datetime import datetime
-from re import Pattern
 from typing import Callable, Optional, Union
 
 import hexdump
@@ -20,10 +19,9 @@ from click.exceptions import Exit
 from construct import Const, Container, CString, Enum, GreedyRange, Int64ul, Struct, Tell
 from parameter_decorators import path_to_str
 
-from pygnuutils.cli.ls import ls as ls_cli
-from pygnuutils.ls import Ls, LsStub
-
 if sys.version_info > (3, 9):
+    from pygnuutils.cli.ls import ls as ls_cli
+    from pygnuutils.ls import Ls, LsStub
     from tqdm.auto import trange
     from xonsh.built_ins import XSH
     from xonsh.cli_utils import Annotated, Arg, ArgParserAlias
@@ -226,7 +224,7 @@ class AfcService(LockdownService):
         super().__init__(lockdown, service_name)
         self.packet_num = 0
 
-    def pull(self, relative_src: str, dst: str, match: Optional[Pattern] = None, callback: Optional[Callable] = None,
+    def pull(self, relative_src: str, dst: str, match = None, callback: Optional[Callable] = None,
              src_dir: str = '', ignore_errors: bool = False, progress_bar: bool = True) -> None:
         src = self.resolve_path(posixpath.join(src_dir, relative_src))
 
@@ -356,7 +354,7 @@ class AfcService(LockdownService):
             raise
 
     @path_to_str()
-    def rm(self, filename: str, match: Optional[Pattern] = None, force: bool = False) -> list:
+    def rm(self, filename: str, match = None, force: bool = False) -> list:
         """ recursive removal of a directory or a file
 
         if did not succeed, return list of undeleted filenames or raise exception depending on force parameter.
