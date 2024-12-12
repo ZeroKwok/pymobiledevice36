@@ -1,3 +1,9 @@
+# PyMobileDevice36
+
+Fork 自 `pymobiledevice3` 项目，并提供了 `py36` 分支，剔除了使用 API 过程中不必要的依赖，降低语法要求以兼容 Python 3.6 以及 3.8。
+
+----
+
 # PyMobileDevice3
 
 <!-- markdownlint-disable MD013 -->
@@ -7,6 +13,7 @@
 [![Discord](https://img.shields.io/discord/1133265168051208214?logo=Discord&label=Discord)](https://discord.gg/52mZGC3JXJ)
 <!-- markdownlint-enable MD013 -->
 
+- [PyMobileDevice36](#pymobiledevice36)
 - [PyMobileDevice3](#pymobiledevice3)
   - [Overview](#overview)
   - [Installation](#installation)
