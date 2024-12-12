@@ -105,7 +105,7 @@ class Pmd3Cli(click.Group):
         ctx.fail(f'No such command {name!r}{suggestion}')
 
     @staticmethod
-    def format_suggestions(suggestions: list[str]) -> str:
+    def format_suggestions(suggestions: list) -> str:
         if not suggestions:
             return ''
         cmds = textwrap.indent('\n'.join(suggestions), ' ' * 4)
@@ -126,7 +126,7 @@ class Pmd3Cli(click.Group):
         return re.sub(f'({keyword})', click.style('\\1', bold=True), text, flags=re.IGNORECASE)
 
     @staticmethod
-    def collect_commands(command: click.Command) -> Union[str, list[str]]:
+    def collect_commands(command: click.Command) -> Union[str, list]:
         commands = []
         if isinstance(command, click.Group):
             for k, v in command.commands.items():
@@ -139,7 +139,7 @@ class Pmd3Cli(click.Group):
         return f'{command.name}'
 
     @staticmethod
-    def search_commands(pattern: str) -> list[str]:
+    def search_commands(pattern: str) -> list:
         all_commands = Pmd3Cli.load_all_commands()
         matched = sorted(filter(lambda cmd: re.search(pattern, cmd), all_commands))
         if not matched:
@@ -149,7 +149,7 @@ class Pmd3Cli(click.Group):
         return matched
 
     @staticmethod
-    def load_all_commands() -> list[str]:
+    def load_all_commands() -> list:
         all_commands = []
         for key in CLI_GROUPS.keys():
             module_name = f'pymobiledevice3.cli.{CLI_GROUPS[key]}'
